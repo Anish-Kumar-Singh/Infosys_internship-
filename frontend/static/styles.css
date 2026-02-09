@@ -1109,7 +1109,7 @@ p {
 
 .footer-bottom {
   padding-top: 2rem;
-  border-top: 1px solid var(--slate-border);
+  /* border-top: 1px solid var(--slate-border); */
   display: flex;
   justify-content: space-between;
   align-items: center;

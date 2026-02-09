@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TranscribeFlow | Upload & Process Audio</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="./static/styles.css">
+  <link rel="stylesheet" href="./static/upload.css">
+</head>
+
+<body>
+  <div class="app-container">
+
+    <!-- Premium Navigation -->
+    <nav class="premium-nav" id="mainNav">
+      <div class="nav-container">
+        <div class="nav-brand">
+          <a href="/" class="logo-link">
+            <div class="logo-icon">
+              <i class="fas fa-wave-square"></i>
+            </div>
+            <span class="logo-text">Transcribe<span class="logo-accent">Flow</span></span>
+            <span class="nav-badge">PRO</span>
+          </a>
+          <div class="nav-identifier">
+            <div class="identifier-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <span class="identifier-text">Upload & Transcribe</span>
+          </div>
+        </div>
+
+        <div class="nav-actions">
+          <button id="clearAllBtn" class="nav-btn danger">
+            <i class="fas fa-trash-alt"></i>
+            <span>Clear All</span>
+          </button>
+          <a href="/" class="nav-btn outline">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+          </a>
+        </div>
+
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="upload-hero">
+        <div class="container-narrow">
+          <div class="hero-content">
+            <h1 class="hero-title">
+              Upload & Process
+              <span class="title-gradient">Audio Files</span>
+            </h1>
+
+            <p class="hero-subtitle">
+              Transform audio into searchable transcripts and AI-powered summaries with professional-grade accuracy.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="upload-workflow">
+        <div class="container-wide">
+          <div class="workflow-grid">
+
+            <!-- Upload Section -->
+            <div class="upload-section">
+              <div class="section-card">
+                <div class="card-header">
+                  <div class="card-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                  </div>
+                  <div class="card-header-content">
+                    <h2>Upload Audio</h2>
+                    <p class="card-subtitle">Select your audio file and language for transcription</p>
+                  </div>
+                  <div class="card-stats">
+                    <div class="stat-chip">
+                      <i class="fas fa-shield-alt"></i>
+                      <span>Secure Upload</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-body">
+                  <form id="uploadForm" class="upload-form">
+                    <!-- Language Selection -->
+                    <div class="form-group">
+                      <div class="form-label">
+                        <div class="label-icon">
+                          <i class="fas fa-language"></i>
+                        </div>
+                        <span>Audio Language</span>
+                        <span class="label-hint">For better accuracy</span>
+                      </div>
+                      <div class="select-wrapper">
+                        <select id="inputLanguage" class="form-select">
+                          <option value="en">English</option>
+                          <option value="hi">Hindi (हिन्दी)</option>
+                          <option value="es">Spanish (Español)</option>
+                          <option value="fr">French (Français)</option>
+                          <option value="de">German (Deutsch)</option>
+                          <option value="zh">Chinese (中文)</option>
+                          <option value="ja">Japanese (日本語)</option>
+                          <option value="ko">Korean (한국어)</option>
+                          <option value="ar">Arabic (العربية)</option>
+                          <option value="ru">Russian (Русский)</option>
+                          <option value="pt">Portuguese (Português)</option>
+                          <option value="bn">Bengali (বাংলা)</option>
+                          <option value="te">Telugu (తెలుగు)</option>
+                          <option value="mr">Marathi (मराठी)</option>
+                          <option value="ta">Tamil (தமிழ்)</option>
+                          <option value="ur">Urdu (اردو)</option>
+                          <option value="it">Italian (Italiano)</option>
+                          <option value="nl">Dutch (Nederlands)</option>
+                          <option value="tr">Turkish (Türkçe)</option>
+                          <option value="vi">Vietnamese (Tiếng Việt)</option>
+                          <option value="th">Thai (ไทย)</option>
+                          <option value="id">Indonesian (Bahasa Indonesia)</option>
+                        </select>
+                        <i class="fas fa-chevron-down select-arrow"></i>
+                      </div>
+                    </div>
+
+                    <!-- File Upload -->
+                    <div class="form-group">
+                      <div class="form-label">
+                        <div class="label-icon">
+                          <i class="fas fa-file-audio"></i>
+                        </div>
+                        <span>Audio File</span>
+                        <span class="label-hint">MP3, WAV, M4A, OGG • Max 25MB</span>
+                      </div>
+
+                      <div class="upload-zone" id="dropzone">
+                        <input type="file" id="audioFile" accept=".mp3,.wav,.m4a,.ogg">
+                        <div class="upload-zone-content">
+                          <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                          </div>
+                          <div class="upload-text">
+                            <span id="dropzoneText" class="upload-main-text">Drag & drop or click to browse</span>
+                            <span id="dropzoneHint" class="upload-hint">Supports all major audio formats</span>
+                          </div>
+                          <button type="button" class="btn-outline-sm" id="browseBtn">
+                            <i class="fas fa-folder-open"></i>
+                            <span>Browse Files</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div id="fileName" class="file-preview"></div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <button type="submit" id="processBtn" class="btn-primary-xl">
+                      <span id="processBtnText">Process Audio</span>
+                      <i class="fas fa-magic"></i>
+                      <div id="processingSpinner" class="spinner hidden">
+                        <div class="spinner-dot"></div>
+                        <div class="spinner-dot"></div>
+                        <div class="spinner-dot"></div>
+                      </div>
+                    </button>
+                  </form>
+
+                  <!-- Processing Indicator -->
+                  <div id="loading" class="processing-indicator hidden">
+                    <div class="processing-header">
+                      <div class="processing-icon">
+                        <i class="fas fa-cog fa-spin"></i>
+                      </div>
+                      <div class="processing-text">
+                        <span class="processing-title">Processing Audio</span>
+                        <span class="processing-subtitle">This may take a few moments</span>
+                      </div>
+                    </div>
+                    <div class="processing-progress">
+                      <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                      </div>
+                      <div class="progress-stats">
+                        <span id="progressPercent">0%</span>
+                        <span id="progressStatus">Initializing...</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Results Ready -->
+                  <div id="resultsReady" class="results-card hidden">
+                    <div class="results-header">
+                      <div class="results-icon success">
+                        <i class="fas fa-check-circle"></i>
+                      </div>
+                      <div class="results-text">
+                        <h3>Processing Complete!</h3>
+                        <p>Your audio has been transcribed and summarized successfully.</p>
+                      </div>
+                    </div>
+                    <div class="results-actions">
+                      <button id="viewResultsBtn" class="btn-primary">
+                        <i class="fas fa-eye"></i>
+                        <span>View Results</span>
+                      </button>
+                      <button id="processAnotherBtn" class="btn-outline">
+                        <i class="fas fa-redo"></i>
+                        <span>Process Another</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Processing Logs -->
+            <div class="logs-section">
+              <div class="section-card">
+                <div class="card-header">
+                  <div class="card-icon">
+                    <i class="fas fa-terminal"></i>
+                  </div>
+                  <div class="card-header-content">
+                    <h2>Processing Logs</h2>
+                    <p class="card-subtitle">Real-time system updates and status</p>
+                  </div>
+                  <div class="card-actions">
+                    <button id="clearLogsBtn" class="btn-icon" title="Clear logs">
+                      <i class="fas fa-eraser"></i>
+                    </button>
+                    <button class="btn-icon" title="Auto-scroll">
+                      <i class="fas fa-arrows-alt-v"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="card-body">
+                  <div id="logsContent" class="logs-container">
+                  </div>
+
+                  <div class="logs-footer">
+                    <div class="logs-stats">
+                      <div class="stat-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Real-time updates</span>
+                      </div>
+                      <div class="stat-item">
+                        <i class="fas fa-database"></i>
+                        <span>Secure processing</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Section -->
+      <div class="stats-section">
+        <div class="container-narrow">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-bolt"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">3.2s</div>
+                <div class="stat-label">Avg. Processing Time</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">99.2%</div>
+                <div class="stat-label">Accuracy Rate</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-language"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">50+</div>
+                <div class="stat-label">Languages Supported</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">256-bit</div>
+                <div class="stat-label">Encryption</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="premium-footer">
+      <div class="footer-bottom">
+        <div class="copyright">
+          © 2026 TranscribeFlow. All rights reserved.
+        </div>
+        <div class="footer-legal">
+          <a href="/privacy" class="legal-link">Privacy</a>
+          <a href="/terms" class="legal-link">Terms</a>
+          <a href="/security" class="legal-link">Security</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Inline Script - FIXED VERSION -->
+  <script>
+    // =====================================================
+    // Navigation Hide/Show on Scroll
+    // =====================================================
+    let lastScrollTop = 0;
+    const navbar = document.getElementById('mainNav');
+    const scrollThreshold = 50;
+    let isNavHidden = false;
+
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      if (Math.abs(scrollTop - lastScrollTop) > scrollThreshold) {
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+          if (!isNavHidden) {
+            navbar.style.transform = 'translateY(-100%)';
+            navbar.style.transition = 'transform 0.3s ease';
+            isNavHidden = true;
+          }
+        } else {
+          if (isNavHidden) {
+            navbar.style.transform = 'translateY(0)';
+            isNavHidden = false;
+          }
+        }
+        lastScrollTop = scrollTop;
+      }
+    });
+
+    // =====================================================
+    // Helper function for API calls
+    // =====================================================
+    async function makeApiCall(url, options = {}) {
+      try {
+        const response = await fetch(url, options);
+        return response;
+      } catch (error) {
+        console.error('Fetch error:', error);
+        throw error;
+      }
+    }
+
+    // =====================================================
+    // Initialize Logs with Current Timestamp
+    // =====================================================
+    document.addEventListener('DOMContentLoaded', function () {
+      const logsContent = document.getElementById('logsContent');
+
+      // Update initial logs with current timestamp
+      if (logsContent) {
+        const currentTime = new Date().toLocaleTimeString();
+        const previousTime = new Date(Date.now() - 7000).toLocaleTimeString(); // 7 seconds ago
+
+        logsContent.innerHTML = `
+        <div class="log-entry log-info">
+          <div class="log-timestamp">[${currentTime}]</div>
+          <div class="log-message">
+            <i class="fas fa-info-circle log-icon"></i>
+            <span>Ready to process audio files</span>
+          </div>
+        </div>
+        <div class="log-entry log-success">
+          <div class="log-timestamp">[${previousTime}]</div>
+          <div class="log-message">
+            <i class="fas fa-check-circle log-icon"></i>
+            <span>Previous session completed successfully</span>
+          </div>
+        </div>
+      `;
+      }
+    });
+
+    // =====================================================
+    // File Upload Handling - FIXED VERSION
+    // =====================================================
+    document.addEventListener('DOMContentLoaded', function () {
+      const audioFileInput = document.getElementById('audioFile');
+      const fileNameDisplay = document.getElementById('fileName');
+      const dropzoneText = document.getElementById('dropzoneText');
+      const dropzoneHint = document.getElementById('dropzoneHint');
+      const dropzone = document.getElementById('dropzone');
+      const browseBtn = document.getElementById('browseBtn');
+      const uploadForm = document.getElementById('uploadForm');
+      const processBtn = document.getElementById('processBtn');
+      const loadingIndicator = document.getElementById('loading');
+      const resultsReady = document.getElementById('resultsReady');
+      const logsContent = document.getElementById('logsContent');
+      const clearLogsBtn = document.getElementById('clearLogsBtn');
+      const clearAllBtn = document.getElementById('clearAllBtn');
+      const viewResultsBtn = document.getElementById('viewResultsBtn');
+      const processAnotherBtn = document.getElementById('processAnotherBtn');
+
+      // Initialize - hide file preview
+      fileNameDisplay.style.display = 'none';
+
+      // SINGLE event handler for file input
+      audioFileInput.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        handleFileSelection(file);
+      });
+
+      // Handle dropzone click - IMPROVED
+      if (dropzone) {
+        dropzone.addEventListener('click', function (e) {
+          // Don't trigger if clicking on browse button or file input itself
+          if (!e.target.closest('.btn-outline-sm') && e.target !== audioFileInput) {
+            audioFileInput.click();
+          }
+        });
+
+        // Drag and drop handling
+        dropzone.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          dropzone.style.borderColor = '#5eead4';
+          dropzone.style.background = 'rgba(94, 234, 212, 0.05)';
+        });
+
+        dropzone.addEventListener('dragleave', function (e) {
+          e.preventDefault();
+          dropzone.style.borderColor = 'rgba(94, 234, 212, 0.3)';
+          dropzone.style.background = 'var(--bg-tertiary)';
+        });
+
+        dropzone.addEventListener('drop', function (e) {
+          e.preventDefault();
+          dropzone.style.borderColor = 'rgba(94, 234, 212, 0.3)';
+          dropzone.style.background = 'var(--bg-tertiary)';
+
+          const file = e.dataTransfer.files[0];
+          if (file) {
+            audioFileInput.files = e.dataTransfer.files;
+            handleFileSelection(file);
+          }
+        });
+      }
+
+      // Handle browse button click - FIXED
+      if (browseBtn) {
+        browseBtn.addEventListener('click', function (e) {
+          e.stopPropagation(); // ✅ Prevents event bubbling to dropzone
+          e.preventDefault();   // Prevents default button behavior
+          audioFileInput.click();
+        });
+      }
+
+      // Handle file selection
+      function handleFileSelection(file) {
+        if (!file) return;
+
+        // Validate file
+        const validTypes = ['audio/mp3', 'audio/wav', 'audio/m4a', 'audio/ogg', 'audio/x-m4a', 'audio/mpeg'];
+        const maxSize = 25 * 1024 * 1024; // 25MB
+        const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+        const validExtensions = ['.mp3', '.wav', '.m4a', '.ogg'];
+
+        if (!validTypes.includes(file.type) && !validExtensions.includes(fileExtension)) {
+          showToast('Invalid file type. Please select MP3, WAV, M4A, or OGG file.', 'error');
+          resetFileSelection();
+          return;
+        }
+
+        if (file.size > maxSize) {
+          showToast('File too large. Maximum size is 25MB.', 'error');
+          resetFileSelection();
+          return;
+        }
+
+        // Update UI
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+        const displayName = file.name.length > 30 ? file.name.substring(0, 27) + '...' : file.name;
+
+        fileNameDisplay.textContent = `${displayName} • ${sizeMB} MB`;
+        fileNameDisplay.style.display = 'flex';
+        fileNameDisplay.style.animation = 'slideIn 0.3s ease';
+
+        dropzoneText.textContent = "File selected ✓";
+        dropzoneHint.textContent = "Click to change file";
+
+        addLog(`📁 Selected: ${file.name} (${sizeMB} MB)`, 'info');
+        showToast('File selected successfully', 'success');
+      }
+
+      function resetFileSelection() {
+        audioFileInput.value = '';
+        fileNameDisplay.style.display = 'none';
+        dropzoneText.textContent = "Drag & drop or click to browse";
+        dropzoneHint.textContent = "Supports all major audio formats";
+      }
+
+      // =====================================================
+      // Upload Form Submission
+      // =====================================================
+      if (uploadForm) {
+        uploadForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const file = audioFileInput.files[0];
+          const language = document.getElementById('inputLanguage').value;
+
+          if (!file) {
+            showToast('Please select an audio file', 'error');
+            if (dropzone) {
+              dropzone.style.borderColor = '#ef4444';
+              setTimeout(() => {
+                dropzone.style.borderColor = 'rgba(94, 234, 212, 0.3)';
+              }, 1000);
+            }
+            return;
+          }
+
+          // Show processing indicator
+          loadingIndicator.classList.remove('hidden');
+          processBtn.disabled = true;
+          resultsReady.classList.add('hidden');
+
+          // Create form data
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('language', language);
+          formData.append('summary_mode', 'bullet');
+
+          try {
+            // Make API call
+            const response = await makeApiCall('/api/upload', {
+              method: 'POST',
+              body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              // Success
+              loadingIndicator.classList.add('hidden');
+              resultsReady.classList.remove('hidden');
+
+              showToast('Audio processed successfully!', 'success');
+
+              // Store result ID for viewing
+              localStorage.setItem('lastResultId', data.id);
+
+              // Add success log
+              addLog('✅ Processing complete', 'success');
+              addLog(`📄 File: ${data.filename}`, 'info');
+            } else {
+              throw new Error(data.detail || 'Upload failed');
+            }
+          } catch (error) {
+            console.error('Upload error:', error);
+            loadingIndicator.classList.add('hidden');
+            showToast(error.message || 'Failed to process audio', 'error');
+            addLog('❌ Processing failed: ' + error.message, 'error');
+          } finally {
+            processBtn.disabled = false;
+          }
+        });
+      }
+
+      // =====================================================
+      // Button Event Listeners
+      // =====================================================
+      if (viewResultsBtn) {
+        viewResultsBtn.addEventListener('click', () => {
+          const resultId = localStorage.getItem('lastResultId');
+          if (resultId) {
+            window.location.href = `/results?id=${resultId}`;
+          } else {
+            window.location.href = '/results';
+          }
+        });
+      }
+
+      if (processAnotherBtn) {
+        processAnotherBtn.addEventListener('click', () => {
+          // Reset form
+          uploadForm.reset();
+          resultsReady.classList.add('hidden');
+          resetFileSelection();
+          addLog('🔄 Ready for new upload', 'info');
+        });
+      }
+
+      if (clearLogsBtn) {
+        clearLogsBtn.addEventListener('click', () => {
+          if (logsContent) {
+            logsContent.innerHTML = `
+          <div class="log-entry log-info">
+              <div class="log-timestamp">[${new Date().toLocaleTimeString()}]</div>
+              <div class="log-message">
+                  <i class="fas fa-info-circle log-icon"></i>
+                  <span>Logs cleared</span>
+              </div>
+          </div>
+        `;
+          }
+        });
+      }
+
+      if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', async () => {
+          if (confirm('Are you sure you want to clear all files?')) {
+            try {
+              const response = await makeApiCall('/api/files/clear-all', {
+                method: 'DELETE'
+              });
+
+              if (response.ok) {
+                showToast('All files cleared successfully', 'success');
+                addLog('🗑️ All files deleted', 'success');
+                resetFileSelection();
+              } else {
+                throw new Error('Failed to clear files');
+              }
+            } catch (error) {
+              showToast('Failed to clear files', 'error');
+              addLog('❌ Failed to clear files: ' + error.message, 'error');
+            }
+          }
+        });
+      }
+
+      // =====================================================
+      // Helper Functions
+      // =====================================================
+      function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `
+      <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+      <span>${message}</span>
+    `;
+
+        const container = document.getElementById('toastContainer');
+        if (container) {
+          container.appendChild(toast);
+
+          setTimeout(() => toast.classList.add('show'), 100);
+
+          setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+              if (toast.parentNode === container) {
+                container.removeChild(toast);
+              }
+            }, 300);
+          }, 3000);
+        }
+      }
+
+      function addLog(message, type = 'info') {
+        const logsContent = document.getElementById('logsContent');
+        if (!logsContent) return;
+
+        const timestamp = new Date().toLocaleTimeString();
+
+        const logEntry = document.createElement('div');
+        logEntry.className = `log-entry log-${type}`;
+        logEntry.innerHTML = `
+      <div class="log-timestamp">[${timestamp}]</div>
+      <div class="log-message">
+          <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} log-icon"></i>
+          <span>${message}</span>
+      </div>
+    `;
+
+        logsContent.insertBefore(logEntry, logsContent.firstChild);
+
+        // Keep only last 50 log entries
+        while (logsContent.children.length > 50) {
+          logsContent.removeChild(logsContent.lastChild);
+        }
+      }
+    });
+
+    // =====================================================
+    // Mobile Menu Toggle
+    // =====================================================
+    document.addEventListener('DOMContentLoaded', function () {
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const navActions = document.querySelector('.nav-actions');
+
+      if (mobileMenuBtn && navActions) {
+        mobileMenuBtn.addEventListener('click', () => {
+          navActions.classList.toggle('show');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!mobileMenuBtn.contains(e.target) &&
+            !navActions.contains(e.target) &&
+            navActions.classList.contains('show')) {
+            navActions.classList.remove('show');
+          }
+        });
+      }
+    });
+  </script>
+
+</body>
+
+</html>
