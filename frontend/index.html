@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,13 +8,15 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./static/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
 </head>
+
 <body>
   <div class="landing-container">
-    
-    <!-- Premium Navigation -->
+
+    <!-- Main navigation - visible across all pages -->
     <nav class="premium-nav">
       <div class="nav-container">
         <div class="nav-brand">
@@ -21,17 +24,18 @@
             <i class="fas fa-wave-square"></i>
           </div>
           <span class="logo-text">Transcribe<span class="logo-accent">Flow</span></span>
-          <span class="nav-badge">PRO</span>
+          <!-- <span class="nav-badge">PRO</span> -->
         </div>
-        
+
         <div class="nav-links">
           <a href="#features" class="nav-link">Features</a>
           <a href="#benefits" class="nav-link">Benefits</a>
           <a href="#metrics" class="nav-link">Metrics</a>
           <a href="#faq" class="nav-link">FAQ</a>
         </div>
-        
+
         <div class="nav-actions">
+          <!-- Authentication entry points -->
           <a href="/login" class="nav-btn secondary">
             <i class="fas fa-sign-in-alt"></i>
             <span>Sign In</span>
@@ -41,33 +45,33 @@
             <i class="fas fa-arrow-right"></i>
           </a>
         </div>
-        
+
         <button class="mobile-menu-btn">
           <i class="fas fa-bars"></i>
         </button>
       </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- Hero section - primary value proposition and CTA -->
+    <section class="hero-section scroll-hidden" data-animation="animate-fade-in">
       <div class="hero-container">
         <div class="hero-content">
-          <div class="hero-badge">
+          <div class="hero-badge scroll-hidden stagger-1" data-animation="animate-slide-down">
             <span class="badge-text">AI-Powered Transcription</span>
             <span class="badge-pulse"></span>
           </div>
-          
-          <h1 class="hero-title">
+
+          <h1 class="hero-title scroll-hidden stagger-2" data-animation="animate-fade-in">
             Transform Audio into
             <span class="title-gradient">Actionable Insights</span>
           </h1>
-          
-          <p class="hero-subtitle">
-            Professional-grade audio transcription and summarization for meetings, 
+
+          <p class="hero-subtitle scroll-hidden stagger-3" data-animation="animate-slide-up">
+            Professional-grade audio transcription and summarization for meetings,
             interviews, lectures, and podcasts. Fast, accurate, and secure.
           </p>
-          
-          <div class="hero-cta">
+
+          <div class="hero-cta scroll-hidden stagger-4" data-animation="animate-slide-up">
             <a href="/upload" class="btn-primary-xl">
               <span>Start Transcribing Free</span>
               <i class="fas fa-arrow-right"></i>
@@ -77,26 +81,28 @@
               <i class="fas fa-chart-line"></i>
             </a>
           </div>
-          
-          <div class="hero-stats">
+
+          <!-- Social proof metrics -->
+          <div class="hero-stats scroll-hidden stagger-5" data-animation="animate-fade-in">
             <div class="stat-item">
               <div class="stat-value">99%</div>
               <div class="stat-label">Accuracy Rate</div>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-item">
-              <div class="stat-value">5M+</div>
+              <div class="stat-value">5K+</div>
               <div class="stat-label">Minutes Transcribed</div>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-item">
-              <div class="stat-value">50+</div>
+              <div class="stat-value">20+</div>
               <div class="stat-label">Languages Supported</div>
             </div>
           </div>
         </div>
-        
-        <div class="hero-preview">
+
+        <!-- Dashboard preview - visual representation of the product -->
+        <div class="hero-preview scroll-hidden stagger-3" data-animation="animate-slide-left">
           <div class="dashboard-mockup">
             <div class="mockup-header">
               <div class="mockup-dots">
@@ -132,7 +138,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="hero-grid-bg">
         <div class="grid-line"></div>
         <div class="grid-line"></div>
@@ -140,92 +146,116 @@
       </div>
     </section>
 
-    <!-- Core Features -->
-    <section class="features-section" id="features">
+    <!-- Feature grid - core product capabilities -->
+    <section class="features-section scroll-hidden stagger-1" data-animation="animate-slide-up" id="features">
       <div class="section-container">
         <div class="section-header">
           <h2 class="section-title">Professional-Grade Features</h2>
           <p class="section-subtitle">Everything you need for productive audio workflow</p>
         </div>
-        
+
         <div class="features-grid">
-          <div class="feature-card">
+          <div class="feature-card scroll-hidden stagger-2" data-animation="animate-slide-up">
             <div class="feature-icon">
-              <i class="fas fa-file-export"></i>
+              <i class="fas fa-microphone-alt"></i>
             </div>
-            <h3 class="feature-title">Export & Share</h3>
+            <h3 class="feature-title">Accurate Transcription</h3>
             <p class="feature-description">
-              Export transcripts as TXT. Share with colleagues or clients seamlessly.
+              Industry-leading accuracy powered by Whisper AI — capturing every word, pause, and nuance from your audio.
             </p>
-            <div class="feature-tag">Multi-format</div>
+            <div class="feature-tag">Whisper AI</div>
           </div>
-          
-          <div class="feature-card">
+
+          <div class="feature-card scroll-hidden stagger-3" data-animation="animate-slide-up">
             <div class="feature-icon">
-              <i class="fas fa-search"></i>
+              <i class="fas fa-bolt"></i>
             </div>
-            <h3 class="feature-title">Smart Search</h3>
+            <h3 class="feature-title">Real-Time Processing</h3>
             <p class="feature-description">
-              Instantly find keywords and phrases within your transcripts with our powerful search.
+              Get full transcripts in seconds, not minutes. Powered by Groq's ultra-fast LPU inference engine.
             </p>
-            <div class="feature-tag">AI-Powered</div>
+            <div class="feature-tag">Groq-Powered</div>
           </div>
-          
-          <div class="feature-card highlight">
+
+          <div class="feature-card highlight scroll-hidden stagger-4" data-animation="animate-slide-up">
             <div class="feature-icon">
               <i class="fas fa-clipboard-check"></i>
             </div>
             <h3 class="feature-title">AI Summarization</h3>
             <p class="feature-description">
-              Get concise summaries highlighting key points, decisions, and action items.
+              Switch between summary modes — Study, Meeting, Interview, or Blog — for context-aware notes tailored to
+              your content.
             </p>
             <div class="feature-tag">Most Popular</div>
           </div>
-          
-          <div class="feature-card">
+
+          <div class="feature-card scroll-hidden stagger-5" data-animation="animate-slide-up">
+            <div class="feature-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3 class="feature-title">Speaker Diarization</h3>
+            <p class="feature-description">
+              Automatically detect and label different speakers in a conversation. Perfect for interviews, meetings, and
+              podcasts.
+            </p>
+            <div class="feature-tag">AI-Powered</div>
+          </div>
+
+          <div class="feature-card scroll-hidden stagger-6" data-animation="animate-slide-up">
+            <div class="feature-icon">
+              <i class="fas fa-globe"></i>
+            </div>
+            <h3 class="feature-title">Multi-Language Support</h3>
+            <p class="feature-description">
+              Transcribe audio in over 20 languages using Whisper AI.
+            </p>
+            <div class="feature-tag">Global</div>
+          </div>
+
+          <div class="feature-card scroll-hidden stagger-6" data-animation="animate-slide-up">
             <div class="feature-icon">
               <i class="fas fa-headphones"></i>
             </div>
-            <h3 class="feature-title">Audio Controls</h3>
+            <h3 class="feature-title">Multiple Audio Formats</h3>
             <p class="feature-description">
-              Full-featured audio player with seeking, and volume adjustment.
+              Upload MP3, OGG, WAV, M4A, FLAC and WAV — TranscribeFlow handles conversion automatically.
             </p>
-            <div class="feature-tag">Real-time</div>
+            <div class="feature-tag">6 Formats</div>
           </div>
-          
-          <div class="feature-card">
+
+          <div class="feature-card scroll-hidden stagger-6" data-animation="animate-slide-up">
             <div class="feature-icon">
-              <i class="fas fa-history"></i>
+              <i class="fas fa-search"></i>
             </div>
-            <h3 class="feature-title">Recent Files</h3>
+            <h3 class="feature-title">Smart Search</h3>
             <p class="feature-description">
-              Quick access to your recent transcriptions.
+              Instantly find keywords and phrases within your transcripts and summary with our powerful search.
             </p>
-            <div class="feature-tag">Cloud Sync</div>
+            <div class="feature-tag">AI-Powered</div>
           </div>
-          
-          <div class="feature-card">
+
+          <div class="feature-card scroll-hidden stagger-6" data-animation="animate-slide-up">
             <div class="feature-icon">
-              <i class="fas fa-cogs"></i>
+              <i class="fas fa-file-export"></i>
             </div>
-            <h3 class="feature-title">Customization</h3>
+            <h3 class="feature-title">Export</h3>
             <p class="feature-description">
-              Adjust font size to match your workflow preferences.
+              Export transcripts as TXT, PDF, DOCX or SRT.
             </p>
-            <div class="feature-tag">Flexible</div>
+            <div class="feature-tag">Multi-Format</div>
           </div>
         </div>
       </div>
     </section>
-
-    <!-- Benefits by User Type -->
-    <section class="benefits-section" id="benefits">
+    
+    <!-- User persona tabs - benefits tailored to different audiences -->
+    <section class="benefits-section scroll-hidden stagger-1" data-animation="animate-slide-right" id="benefits">
       <div class="section-container">
         <div class="section-header">
           <h2 class="section-title">Optimized for Every Professional</h2>
           <p class="section-subtitle">Tailored benefits for different workflows</p>
         </div>
-        
+
         <div class="benefits-tabs">
           <div class="tab-nav">
             <button class="tab-btn active" data-tab="creators">Content Creators</button>
@@ -233,46 +263,158 @@
             <button class="tab-btn" data-tab="academia">Academia</button>
             <button class="tab-btn" data-tab="legal">Legal Professionals</button>
           </div>
-          
+
           <div class="tab-content">
+
+            <!-- Content creator use cases -->
             <div class="tab-pane active" id="creators">
               <div class="benefits-grid">
                 <div class="benefit-item">
-                  <div class="benefit-icon">
-                    <i class="fas fa-podcast"></i>
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-podcast"></i></div>
+                    <h3>Podcast Production</h3>
                   </div>
-                  <h3>Podcast Production</h3>
-                  <p>Turn episodes into searchable, editable transcripts in minutes</p>
+                  <p>Turn podcast episodes into searchable, editable transcripts ready for publishing in minutes.</p>
                 </div>
                 <div class="benefit-item">
-                  <div class="benefit-icon">
-                    <i class="fas fa-subtitles"></i>
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-closed-captioning"></i></div>
+                    <h3>Auto-Subtitles</h3>
                   </div>
-                  <h3>Auto-Subtitles</h3>
-                  <p>Generate accurate subtitles for video content automatically</p>
+                  <p>Generate accurate subtitles for any video content automatically without manual effort.</p>
                 </div>
                 <div class="benefit-item">
-                  <div class="benefit-icon">
-                    <i class="fas fa-bolt"></i>
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-bolt"></i></div>
+                    <h3>Rapid Turnaround</h3>
                   </div>
-                  <h3>Rapid Turnaround</h3>
-                  <p>Process hours of audio in minutes, not days</p>
+                  <p>Process hours of recorded audio in minutes, freeing your time for creative work.</p>
+                </div>
+                <div class="benefit-item">
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-share-alt"></i></div>
+                    <h3>Content Repurposing</h3>
+                  </div>
+                  <p>Transform audio into blog posts, show notes, and social media clips instantly.</p>
                 </div>
               </div>
             </div>
+
+            <!-- Business team use cases -->
+            <div class="tab-pane" id="teams">
+              <div class="benefits-grid">
+                <div class="benefit-item">
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-users"></i></div>
+                    <h3>Meeting Transcription</h3>
+                  </div>
+                  <p>Never miss a decision — auto-transcribe every team call and standup meeting.</p>
+                </div>
+                <div class="benefit-item">
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-tasks"></i></div>
+                    <h3>Action Item Extraction</h3>
+                  </div>
+                  <p>AI automatically pulls key decisions and action items from every recorded meeting.</p>
+                </div>
+                <div class="benefit-item">
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-user-tie"></i></div>
+                    <h3>Speaker Identification</h3>
+                  </div>
+                  <p>Know exactly who said what in every recorded meeting with speaker diarization.</p>
+                </div>
+                <div class="benefit-item">
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-file-alt"></i></div>
+                    <h3>Instant Reports</h3>
+                  </div>
+                  <p>Generate professional meeting summaries ready to share with stakeholders immediately.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Academic use cases -->
+            <div class="tab-pane" id="academia">
+              <div class="benefits-grid">
+                <div class="benefit-item">
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <h3>Lecture Notes</h3>
+                  </div>
+                  <p>Convert recorded lectures into structured, searchable study notes automatically.</p>
+                </div>
+                <div class="benefit-item">
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-book-open"></i></div>
+                    <h3>Research Interviews</h3>
+                  </div>
+                  <p>Transcribe and analyze qualitative research interviews accurately with zero manual effort.</p>
+                </div>
+                <div class="benefit-item">
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-highlighter"></i></div>
+                    <h3>Study Summaries</h3>
+                  </div>
+                  <p>Get AI-generated key point summaries from lectures optimized for exam revision.</p>
+                </div>
+                <div class="benefit-item">
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-globe"></i></div>
+                    <h3>Multilingual Support</h3>
+                  </div>
+                  <p>Transcribe lectures and research in 50+ languages for truly global academic work.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Legal professional use cases -->
+            <div class="tab-pane" id="legal">
+              <div class="benefits-grid">
+                <div class="benefit-item">
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-gavel"></i></div>
+                    <h3>Deposition Transcripts</h3>
+                  </div>
+                  <p>Accurately transcribe depositions and court hearings with labeled speaker identification.</p>
+                </div>
+                <div class="benefit-item">
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-search"></i></div>
+                    <h3>Case Search</h3>
+                  </div>
+                  <p>Instantly search across all transcripts by keyword, speaker, or date for any case.</p>
+                </div>
+                <div class="benefit-item">
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-lock"></i></div>
+                    <h3>Confidential & Secure</h3>
+                  </div>
+                  <p>All files are encrypted and stored privately — never shared with third parties.</p>
+                </div>
+                <div class="benefit-item">
+                  <div class="benefit-header">
+                    <div class="benefit-icon"><i class="fas fa-file-contract"></i></div>
+                    <h3>Document Ready</h3>
+                  </div>
+                  <p>Export court-ready transcripts in TXT or PDF format with a single click.</p>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Metrics Dashboard -->
-    <section class="metrics-section" id="metrics">
+    <!-- Key performance metrics and usage statistics -->
+    <section class="metrics-section scroll-hidden stagger-1" data-animation="animate-scale-in" id="metrics">
       <div class="section-container">
         <div class="metrics-header">
           <h2 class="section-title">Trusted by Industry Leaders</h2>
           <p class="section-subtitle">Real-time performance metrics</p>
         </div>
-        
+
         <div class="metrics-grid">
           <div class="metric-card">
             <div class="metric-value" data-count="99.2">0</div>
@@ -282,7 +424,7 @@
               <span>2.4% this month</span>
             </div>
           </div>
-          
+
           <div class="metric-card">
             <div class="metric-value" data-count="15000">0</div>
             <div class="metric-label">Active Users</div>
@@ -291,7 +433,7 @@
               <span>12% growth</span>
             </div>
           </div>
-          
+
           <div class="metric-card">
             <div class="metric-value" data-count="3.2">0</div>
             <div class="metric-label">Avg Processing Time (min)</div>
@@ -300,7 +442,7 @@
               <span>0.8s faster</span>
             </div>
           </div>
-          
+
           <div class="metric-card">
             <div class="metric-value" data-count="4.9">0</div>
             <div class="metric-label">User Rating</div>
@@ -310,7 +452,8 @@
             </div>
           </div>
         </div>
-        
+
+        <!-- Usage volume visualization -->
         <div class="metrics-chart">
           <div class="chart-header">
             <h3>Processing Volume (Last 30 Days)</h3>
@@ -338,67 +481,69 @@
       </div>
     </section>
 
-    <!-- FAQ Section -->
-    <section class="faq-section" id="faq">
+    <!-- FAQ - common questions and answers -->
+    <section class="faq-section scroll-hidden stagger-1" data-animation="animate-slide-up" id="faq">
       <div class="section-container">
         <div class="section-header">
           <h2 class="section-title">Frequently Asked Questions</h2>
           <p class="section-subtitle">Everything you need to know</p>
         </div>
-        
+
         <div class="faq-grid">
           <div class="faq-item">
             <div class="faq-question">
-              <h3>What audio formats are supported?</h3>
+              <h3>What formats are supported?</h3>
               <i class="fas fa-chevron-down"></i>
             </div>
             <div class="faq-answer">
-              <p>We support MP3, WAV, M4A, FLAC, and all major audio formats. Video files with audio tracks are also supported.</p>
+              <p>We support MP3, WAV, M4A, and all major audio formats. Video files will be supported soon.</p>
             </div>
           </div>
-          
+
           <div class="faq-item">
             <div class="faq-question">
               <h3>How accurate is the transcription?</h3>
               <i class="fas fa-chevron-down"></i>
             </div>
             <div class="faq-answer">
-              <p>Our AI achieves 99% accuracy for clear audio. For optimal results, ensure good recording quality with minimal background noise.</p>
+              <p>Our AI achieves 99% accuracy for clear audio. For optimal results, ensure good recording quality with
+                minimal background noise.</p>
             </div>
           </div>
-          
+
           <div class="faq-item">
             <div class="faq-question">
               <h3>Is my data secure?</h3>
               <i class="fas fa-chevron-down"></i>
             </div>
             <div class="faq-answer">
-              <p>All files are encrypted in transit and at rest. We never share your data and provide automatic deletion options.</p>
+              <p>All files are encrypted in transit and at rest. We never share your data and provide automatic deletion
+                options.</p>
             </div>
           </div>
-          
+
           <div class="faq-item">
             <div class="faq-question">
               <h3>Can I edit the transcripts?</h3>
               <i class="fas fa-chevron-down"></i>
             </div>
             <div class="faq-answer">
-              <p>Yes, our built-in editor allows you to make corrections, add speaker labels, and format text before export.</p>
+              <p>Transcript editing is currently not available, but it's on our roadmap and will be added in a future update. Stay tuned!</p>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Final CTA -->
-    <section class="final-cta">
+    <!-- Final CTA - commented out for future implementation
+    <section class="final-cta scroll-hidden" data-animation="animate-zoom-in">
       <div class="cta-container">
         <div class="cta-content">
           <h2 class="cta-title">Ready to Revolutionize Your Audio Workflow?</h2>
           <p class="cta-subtitle">
             Join thousands of professionals who save hours every week with TranscribeFlow.
           </p>
-          
+
           <div class="cta-features">
             <div class="feature-check">
               <i class="fas fa-check-circle"></i>
@@ -413,7 +558,7 @@
               <span>Cancel anytime</span>
             </div>
           </div>
-          
+
           <div class="cta-actions">
             <a href="/upload" class="btn-primary-xxl">
               <span>Start Transcribing Now</span>
@@ -425,7 +570,7 @@
             </a>
           </div>
         </div>
-        
+
         <div class="cta-badge">
           <div class="badge-content">
             <span class="badge-title">Most Trusted</span>
@@ -440,9 +585,9 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
 
-    <!-- Footer -->
+    <!-- Site footer with legal and navigation links -->
     <footer class="premium-footer">
       <div class="footer-container">
         <div class="footer-main">
@@ -461,7 +606,7 @@
               <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
             </div>
           </div>
-          
+
           <div class="footer-links">
             <div class="link-group">
               <h4>Product</h4>
@@ -470,7 +615,7 @@
               <a href="/pricing" class="footer-link">Pricing</a>
               <a href="/updates" class="footer-link">Updates</a>
             </div>
-            
+
             <div class="link-group">
               <h4>Resources</h4>
               <a href="/docs" class="footer-link">Documentation</a>
@@ -478,7 +623,7 @@
               <a href="/blog" class="footer-link">Blog</a>
               <a href="/support" class="footer-link">Support</a>
             </div>
-            
+
             <div class="link-group">
               <h4>Company</h4>
               <a href="/about" class="footer-link">About</a>
@@ -488,7 +633,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="footer-bottom">
           <div class="copyright">
             © 2026 TranscribeFlow. All rights reserved.
@@ -503,6 +648,8 @@
     </footer>
   </div>
 
-  <script src="./static/script.js"></script>
+  <!-- Main application bundle -->
+  <script src="/static/script.js"></script>
 </body>
+
 </html>

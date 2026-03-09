@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.pyc
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+backend/uploads/
+
+
+uploads/ 
+models_cache/
+others/
+
+#Random FIles
+create_tables.pysample/
+
+#Diaritization Models
+models--pyannote--*
+
+# Ignore all .txt files in backend and frontend folders
+/backend/*.txt
+/frontend/*.txt
+
+content_files

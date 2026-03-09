@@ -12,52 +12,17 @@
     rel="stylesheet">
   <link rel="stylesheet" href="./static/styles.css">
   <link rel="stylesheet" href="./static/upload.css">
+  <link rel="stylesheet" href="./static/sidebar.css">
 </head>
 
 <body>
   <div class="app-container">
 
-    <!-- Premium Navigation -->
-    <nav class="premium-nav" id="mainNav">
-      <div class="nav-container">
-        <div class="nav-brand">
-          <a href="/" class="logo-link">
-            <div class="logo-icon">
-              <i class="fas fa-wave-square"></i>
-            </div>
-            <span class="logo-text">Transcribe<span class="logo-accent">Flow</span></span>
-            <span class="nav-badge">PRO</span>
-          </a>
-          <div class="nav-identifier">
-            <div class="identifier-icon">
-              <i class="fas fa-cloud-upload-alt"></i>
-            </div>
-            <span class="identifier-text">Upload & Transcribe</span>
-          </div>
-        </div>
-
-        <div class="nav-actions">
-          <button id="clearAllBtn" class="nav-btn danger">
-            <i class="fas fa-trash-alt"></i>
-            <span>Clear All</span>
-          </button>
-          <a href="/" class="nav-btn outline">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-          </a>
-        </div>
-
-        <button class="mobile-menu-btn" id="mobileMenuBtn">
-          <i class="fas fa-bars"></i>
-        </button>
-      </div>
-    </nav>
-
     <!-- Main Content -->
     <main class="main-content">
-      <div class="upload-hero">
+      <div class="upload-hero animate-fade-in">
         <div class="container-narrow">
-          <div class="hero-content">
+          <div class="hero-content animate-slide-down">
             <h1 class="hero-title">
               Upload & Process
               <span class="title-gradient">Audio Files</span>
@@ -75,7 +40,7 @@
           <div class="workflow-grid">
 
             <!-- Upload Section -->
-            <div class="upload-section">
+            <div class="upload-section animate-slide-up stagger-1">
               <div class="section-card">
                 <div class="card-header">
                   <div class="card-icon">
@@ -144,7 +109,7 @@
                       </div>
 
                       <div class="upload-zone" id="dropzone">
-                        <input type="file" id="audioFile" accept=".mp3,.wav,.m4a,.ogg">
+                        <input type="file" id="audioFile" accept=".mp3,.wav,.m4a,.ogg" multiple>
                         <div class="upload-zone-content">
                           <div class="upload-icon">
                             <i class="fas fa-cloud-upload-alt"></i>
@@ -161,6 +126,75 @@
                       </div>
 
                       <div id="fileName" class="file-preview"></div>
+
+                      <!-- Batch File List -->
+                      <div id="batchFileList" class="batch-file-list hidden"></div>
+                    </div>
+
+                    <!-- Summary Format Selection -->
+                    <div class="form-group">
+                      <div class="form-label">
+                        <div class="label-icon">
+                          <i class="fas fa-list-alt"></i>
+                        </div>
+                        <span>Summary Format</span>
+                        <span class="label-hint">Choose summary style</span>
+                      </div>
+                      <div class="select-wrapper">
+                        <select id="summaryMode" class="form-select">
+                          <option value="bullet" selected>Bullet Points</option>
+                          <option value="meeting">Meeting Minutes</option>
+                          <option value="action">Action Items</option>
+                          <option value="study">Study Notes</option>
+                          <option value="blog">Blog Ready Summary</option>
+                        </select>
+                        <i class="fas fa-chevron-down select-arrow"></i>
+                      </div>
+                    </div>
+
+                    <!-- Speaker Diarization Option -->
+                    <div class="form-group">
+                      <div class="diarization-toggle">
+                        <label class="toggle-switch" for="enableDiarization">
+                          <input type="checkbox" id="enableDiarization">
+                          <span class="toggle-slider"></span>
+                        </label>
+                        <div class="toggle-label-content">
+                          <div class="toggle-label-row">
+                            <div class="label-icon">
+                              <i class="fas fa-users"></i>
+                            </div>
+                            <span>Speaker Diarization</span>
+                            <span class="label-hint label-badge">Optional</span>
+                          </div>
+                          <span class="toggle-description">Identify and label different speakers in the audio</span>
+                        </div>
+                      </div>
+
+                      <div id="diarizationOptions" class="diarization-options hidden">
+                        <div class="diarization-option-row">
+                          <div class="option-label">
+                            <i class="fas fa-hashtag"></i>
+                            <span>Number of Speakers</span>
+                          </div>
+                          <div class="option-input-wrapper">
+                            <select id="numSpeakers" class="form-select form-select-sm">
+                              <option value="">Auto-detect</option>
+                              <option value="2">2 speakers</option>
+                              <option value="3">3 speakers</option>
+                              <option value="4">4 speakers</option>
+                              <option value="5">5 speakers</option>
+                              <option value="6">6 speakers</option>
+                            </select>
+                            <i class="fas fa-chevron-down select-arrow"></i>
+                          </div>
+                        </div>
+                        <div class="diarization-note">
+                          <i class="fas fa-info-circle"></i>
+                          <span>Diarization adds processing time. Works best with clear audio and distinct
+                            speakers.</span>
+                        </div>
+                      </div>
                     </div>
 
                     <!-- Action Button -->
@@ -179,7 +213,7 @@
                   <div id="loading" class="processing-indicator hidden">
                     <div class="processing-header">
                       <div class="processing-icon">
-                        <i class="fas fa-cog fa-spin"></i>
+                        <div class="spinner-large"></div>
                       </div>
                       <div class="processing-text">
                         <span class="processing-title">Processing Audio</span>
@@ -197,7 +231,7 @@
                     </div>
                   </div>
 
-                  <!-- Results Ready -->
+                  <!-- Results Ready (Single File) -->
                   <div id="resultsReady" class="results-card hidden">
                     <div class="results-header">
                       <div class="results-icon success">
@@ -219,12 +253,36 @@
                       </button>
                     </div>
                   </div>
+
+                  <!-- Batch Results -->
+                  <div id="batchResultsReady" class="results-card hidden">
+                    <div class="results-header">
+                      <div class="results-icon success">
+                        <i class="fas fa-layer-group"></i>
+                      </div>
+                      <div class="results-text">
+                        <h3>Batch Upload Submitted!</h3>
+                        <p id="batchResultsSummary">Your files are being processed in the background.</p>
+                      </div>
+                    </div>
+                    <div id="batchResultsList" class="batch-results-list"></div>
+                    <div class="results-actions">
+                      <button id="batchDashboardBtn" class="btn-primary">
+                        <i class="fas fa-th-large"></i>
+                        <span>Go to Dashboard</span>
+                      </button>
+                      <button id="batchAnotherBtn" class="btn-outline">
+                        <i class="fas fa-redo"></i>
+                        <span>Upload More</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- Processing Logs -->
-            <div class="logs-section">
+            <div class="logs-section animate-slide-up stagger-2">
               <div class="section-card">
                 <div class="card-header">
                   <div class="card-icon">
@@ -268,7 +326,7 @@
       </div>
 
       <!-- Stats Section -->
-      <div class="stats-section">
+      <div class="stats-section animate-slide-up stagger-3">
         <div class="container-narrow">
           <div class="stats-grid">
             <div class="stat-card">
@@ -276,7 +334,7 @@
                 <i class="fas fa-bolt"></i>
               </div>
               <div class="stat-content">
-                <div class="stat-value">3.2s</div>
+                <div class="stat-value">5s</div>
                 <div class="stat-label">Avg. Processing Time</div>
               </div>
             </div>
@@ -285,7 +343,7 @@
                 <i class="fas fa-chart-line"></i>
               </div>
               <div class="stat-content">
-                <div class="stat-value">99.2%</div>
+                <div class="stat-value">99%</div>
                 <div class="stat-label">Accuracy Rate</div>
               </div>
             </div>
@@ -294,11 +352,11 @@
                 <i class="fas fa-language"></i>
               </div>
               <div class="stat-content">
-                <div class="stat-value">50+</div>
+                <div class="stat-value">22</div>
                 <div class="stat-label">Languages Supported</div>
               </div>
             </div>
-            <div class="stat-card">
+            <!-- <div class="stat-card">
               <div class="stat-icon">
                 <i class="fas fa-shield-alt"></i>
               </div>
@@ -306,7 +364,7 @@
                 <div class="stat-value">256-bit</div>
                 <div class="stat-label">Encryption</div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -331,7 +389,8 @@
   <div id="toastContainer" class="toast-container"></div>
 
   <!-- External JavaScript -->
-  <script src="./static/upload.js"></script>
+  <script src="/static/sidebar.js"></script>
+  <script src="/static/upload.js"></script>
 </body>
 
 </html>

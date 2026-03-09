@@ -1,12 +1,18 @@
 // Results Page JavaScript
+
+/**
+ * Main controller class for the transcription results page
+ * Handles audio playback, transcript display, translation, search, and export functionality
+ */
 class ResultsPage {
     constructor() {
-        this.currentData = null;
-        this.audioPlayer = null;
-        this.searchMatches = [];
-        this.currentMatchIndex = -1;
-        this.playbackSpeed = 1.0;
-        this.isLooping = false;
+        this.currentData = null;              // Complete file data from API/session
+        this.audioPlayer = null;               // Audio element reference
+        this.searchMatches = [];                // Array of search result indices
+        this.currentMatchIndex = -1;            // Current highlighted search match
+        this.playbackSpeed = 1.0;               // Current audio playback speed
+        this.currentSpeakingCard = null;         // Currently active text-to-speech card
+        this.isLooping = false;                  // Audio loop state
 
         this.checkAuthentication();
         this.initializeElements();
@@ -14,6 +20,10 @@ class ResultsPage {
         this.loadResults();
     }
 
+    /**
+     * Verify user authentication status
+     * Redirects to login if no valid token found
+     */
     checkAuthentication() {
         const token = localStorage.getItem('access_token');
         if (!token) {
@@ -21,6 +31,13 @@ class ResultsPage {
         }
     }
 
+    /**
+     * Wrapper for authenticated API requests
+     * Automatically adds auth token and handles 401 responses
+     * @param {string} url - API endpoint URL
+     * @param {Object} options - Fetch options
+     * @returns {Promise<Response|null>} Fetch response or null if unauthorized
+     */
     async fetchWithAuth(url, options = {}) {
         const token = localStorage.getItem('access_token');
 
@@ -51,6 +68,9 @@ class ResultsPage {
         }
     }
 
+    /**
+     * Cache DOM elements for frequent access
+     */
     initializeElements() {
         this.elements = {
             // File Info
@@ -94,9 +114,14 @@ class ResultsPage {
             translatedTranscriptCard: document.getElementById('translatedTranscriptCard'),
             translatedTranscript: document.getElementById('translatedTranscript'),
             closeTranslation: document.getElementById('closeTranslation'),
-            speakTranscript: document.getElementById('speakTranscript'),
             copyTranslated: document.getElementById('copyTranslated'),
             exportTranslated: document.getElementById('exportTranslated'),
+
+            // Per-card speak buttons
+            speakTranscriptCard: document.getElementById('speakTranscriptCard'),
+            speakSummaryCard: document.getElementById('speakSummaryCard'),
+            speakTranslatedTranscriptCard: document.getElementById('speakTranslatedTranscriptCard'),
+            speakTranslatedSummaryCard: document.getElementById('speakTranslatedSummaryCard'),
             copyTranslatedSummary: document.getElementById('copyTranslatedSummary'),
             exportTranslatedSummary: document.getElementById('exportTranslatedSummary'),
 
@@ -105,13 +130,28 @@ class ResultsPage {
             copySummary: document.getElementById('copySummary'),
             exportSummaryTxt: document.getElementById('exportSummaryTxt'),
 
+            // Progress fill for visual feedback
+            progressFill: document.getElementById('progressFill'),
+            volumeFill: document.getElementById('volumeFill'),
+            speedDisplay: document.getElementById('speedDisplay'),
+
+            // Scroll controls
+            scrollToTop: document.getElementById('scrollToTop'),
+            scrollToBottom: document.getElementById('scrollToBottom'),
+
             // Toast
-            toastContainer: document.getElementById('toastContainer')
+            toastContainer: document.getElementById('toastContainer'),
+
+            // Loading Overlay
+            loadingOverlay: document.getElementById('loadingOverlay')
         };
 
         this.audioPlayer = this.elements.audioPlayer;
     }
 
+    /**
+     * Initialize all event listeners for user interactions
+     */
     setupEventListeners() {
         // Audio Player Controls
         if (this.elements.playPause) {
@@ -194,9 +234,18 @@ class ResultsPage {
             this.elements.closeTranslation.addEventListener('click', () => this.hideTranslation());
         }
 
-        // Speak transcript aloud
-        if (this.elements.speakTranscript) {
-            this.elements.speakTranscript.addEventListener('click', () => this.speakText());
+        // Per-card speak buttons
+        if (this.elements.speakTranscriptCard) {
+            this.elements.speakTranscriptCard.addEventListener('click', () => this.speakCardText('transcript'));
+        }
+        if (this.elements.speakSummaryCard) {
+            this.elements.speakSummaryCard.addEventListener('click', () => this.speakCardText('summary'));
+        }
+        if (this.elements.speakTranslatedTranscriptCard) {
+            this.elements.speakTranslatedTranscriptCard.addEventListener('click', () => this.speakCardText('translatedTranscript'));
+        }
+        if (this.elements.speakTranslatedSummaryCard) {
+            this.elements.speakTranslatedSummaryCard.addEventListener('click', () => this.speakCardText('translatedSummary'));
         }
 
         // Copy/Export Translated Content
@@ -205,7 +254,10 @@ class ResultsPage {
         }
 
         if (this.elements.exportTranslated) {
-            this.elements.exportTranslated.addEventListener('click', () => this.exportText('translatedTranscript'));
+            this.elements.exportTranslated.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleExportDropdown('translatedTranscriptExportMenu');
+            });
         }
 
         if (this.elements.copyTranslatedSummary) {
@@ -213,7 +265,10 @@ class ResultsPage {
         }
 
         if (this.elements.exportTranslatedSummary) {
-            this.elements.exportTranslatedSummary.addEventListener('click', () => this.exportText('translatedSummary'));
+            this.elements.exportTranslatedSummary.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleExportDropdown('translatedSummaryExportMenu');
+            });
         }
 
         // Copy/Export Buttons
@@ -222,7 +277,10 @@ class ResultsPage {
         }
 
         if (this.elements.exportTxt) {
-            this.elements.exportTxt.addEventListener('click', () => this.exportText('transcript'));
+            this.elements.exportTxt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleExportDropdown('transcriptExportMenu');
+            });
         }
 
         if (this.elements.copySummary) {
@@ -230,10 +288,65 @@ class ResultsPage {
         }
 
         if (this.elements.exportSummaryTxt) {
-            this.elements.exportSummaryTxt.addEventListener('click', () => this.exportText('summary'));
+            this.elements.exportSummaryTxt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleExportDropdown('summaryExportMenu');
+            });
+        }
+
+        // Export format option clicks (event delegation)
+        document.addEventListener('click', (e) => {
+            const option = e.target.closest('.export-option');
+            if (option) {
+                e.stopPropagation();
+                const format = option.dataset.format;
+                const type = option.dataset.type;
+                this.exportInFormat(type, format);
+                // Close all export dropdowns
+                document.querySelectorAll('.export-dropdown-menu').forEach(m => m.classList.remove('show'));
+            }
+        });
+
+        // Close export dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.export-dropdown-wrapper')) {
+                document.querySelectorAll('.export-dropdown-menu').forEach(m => m.classList.remove('show'));
+            }
+        });
+
+        // File Info Buttons
+        const copyFileInfoBtn = document.getElementById('copyFileInfoBtn');
+        if (copyFileInfoBtn) {
+            copyFileInfoBtn.addEventListener('click', () => this.copyFileInfo());
+        }
+
+        const exportFileInfoBtn = document.getElementById('exportFileInfoBtn');
+        if (exportFileInfoBtn) {
+            exportFileInfoBtn.addEventListener('click', () => this.exportFileInfo());
+        }
+
+        // Scroll to top / bottom of transcript
+        if (this.elements.scrollToTop) {
+            this.elements.scrollToTop.addEventListener('click', () => {
+                if (this.elements.transcript) {
+                    this.elements.transcript.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+        }
+
+        if (this.elements.scrollToBottom) {
+            this.elements.scrollToBottom.addEventListener('click', () => {
+                if (this.elements.transcript) {
+                    this.elements.transcript.scrollTo({ top: this.elements.transcript.scrollHeight, behavior: 'smooth' });
+                }
+            });
         }
     }
 
+    /**
+     * Load transcription results from API or session storage
+     * Handles both direct file ID URLs and stored session data
+     */
     async loadResults() {
         try {
             // Get file ID from URL or sessionStorage
@@ -284,9 +397,38 @@ class ResultsPage {
         } catch (error) {
             console.error('❌ Error loading results:', error);
             this.showToast('Failed to load results: ' + error.message, 'error');
+
+            // Allow user to try again or see partial state
+            if (this.elements.loadingOverlay) {
+                this.elements.loadingOverlay.querySelector('.loading-text').textContent = 'Error Loading Results';
+                this.elements.loadingOverlay.querySelector('.loading-subtext').textContent = error.message;
+                // Optional: add a retry button
+            }
+        } finally {
+            // Hide loading overlay regardless of success/error (or maybe keep it on error?)
+            // For now, let's hide it on success, and maybe keep it with error message on failure
+            if (this.currentData) {
+                this.hideLoading();
+            }
         }
     }
 
+    /**
+     * Hide the loading overlay with fade out animation
+     */
+    hideLoading() {
+        if (this.elements.loadingOverlay) {
+            this.elements.loadingOverlay.classList.remove('visible');
+            setTimeout(() => {
+                this.elements.loadingOverlay.style.display = 'none';
+            }, 300);
+        }
+
+    }
+
+    /**
+     * Display file metadata in the info panel
+     */
     displayFileInfo() {
         if (!this.currentData) return;
 
@@ -336,6 +478,9 @@ class ResultsPage {
     }
 
     // Add this new method to fetch audio file size
+    /**
+     * Attempt to fetch audio file size via HEAD request if not provided in metadata
+     */
     async fetchAudioFileSize() {
         try {
             const audioUrl = this.currentData.audio_url ||
@@ -388,6 +533,49 @@ class ResultsPage {
         }
     }
 
+    /**
+     * Get formatted file info text for copy/export
+     * @returns {string} Formatted file information
+     */
+    getFileInfoText() {
+        const name = this.elements.fileInfoName?.textContent || 'Unknown';
+        const size = this.elements.fileInfoSize?.textContent || 'Unknown';
+        const time = this.elements.fileInfoTime?.textContent || 'Unknown';
+        const lang = this.elements.fileInfoLanguage?.textContent || 'Unknown';
+        return `File Name: ${name}\nFile Size: ${size}\nProcessed: ${time}\nLanguage: ${lang}`;
+    }
+
+    /**
+     * Copy file information to clipboard
+     */
+    copyFileInfo() {
+        const text = this.getFileInfoText();
+        navigator.clipboard.writeText(text).then(() => {
+            this.showToast('File info copied to clipboard!', 'success');
+        }).catch(() => {
+            this.showToast('Failed to copy file info', 'error');
+        });
+    }
+
+    /**
+     * Export file information as text file
+     */
+    exportFileInfo() {
+        const text = this.getFileInfoText();
+        const filename = (this.currentData?.filename || 'file-info').replace(/\.[^.]+$/, '') + '_info.txt';
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.showToast('File info exported!', 'success');
+    }
+
+    /**
+     * Display transcript content in the UI
+     */
     displayTranscript() {
         if (!this.currentData || !this.elements.transcript) return;
 
@@ -408,6 +596,9 @@ class ResultsPage {
         }
     }
 
+    /**
+     * Display summary content in the UI
+     */
     displaySummary() {
         if (!this.currentData || !this.elements.summary) return;
 
@@ -425,6 +616,9 @@ class ResultsPage {
         }
     }
 
+    /**
+     * Initialize audio player with the file's audio URL
+     */
     setupAudioPlayer() {
         if (!this.currentData || !this.audioPlayer) return;
 
@@ -437,25 +631,63 @@ class ResultsPage {
         }
     }
 
+    /**
+     * Format transcript text for display with proper paragraphs
+     * @param {string} text - Raw transcript text
+     * @returns {string} HTML formatted transcript
+     */
     formatTranscript(text) {
-        // Format transcript with paragraphs
-        return text.split('\n').filter(line => line.trim()).map(line => `<p>${line}</p>`).join('');
+        if (!text) return '';
+
+        // Clean up artifacts like leading/trailing quotes which might come from JSON serialization issues
+        let cleanText = text;
+        if (cleanText.startsWith('"') && cleanText.endsWith('"')) {
+            cleanText = cleanText.substring(1, cleanText.length - 1);
+        }
+
+        // Remove weird double quotes like "" at the start if present
+        if (cleanText.startsWith('""')) {
+            cleanText = cleanText.substring(2);
+        }
+
+        // Helper to parse markdown bold
+        const parseBold = (str) => str.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+        // Format transcript with paragraphs and parse bold
+        return cleanText.split('\n')
+            .filter(line => line.trim())
+            .map(line => `<p>${parseBold(line)}</p>`)
+            .join('');
     }
 
+    /**
+     * Format summary text for display with proper structure
+     * Handles markdown, bullet points, and headings
+     * @param {string} text - Raw summary text
+     * @returns {string} HTML formatted summary
+     */
     formatSummary(text) {
         // Convert markdown-style bold **text** to <strong>text</strong>
         const parseBold = (str) => str.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
         // Pre-process: normalize garbled Unicode bullet/dash characters
-        // These appear when UTF-8 bullets (•, –, —) get encoding-corrupted
+        // Only fix known garbled patterns, do NOT strip non-ASCII broadly
         text = text
             .replace(/â€¢/g, '•')       // garbled bullet •
             .replace(/â€"/g, '—')       // garbled em-dash —
             .replace(/â€"/g, '–')       // garbled en-dash –
             .replace(/â\s*-/g, '- ')    // â- pattern (corrupted bullet)
-            .replace(/â¢/g, '•')        // another garbled bullet variant
-            .replace(/[^\x00-\x7F]+-\s/g, '- ')  // any non-ASCII char(s) followed by "- "
-            .replace(/[^\x00-\x7F]+\.\s/g, '- '); // any non-ASCII char(s) followed by ". "
+            .replace(/â¢/g, '•');       // another garbled bullet variant
+
+        // If text has no newlines, try to split on sentence boundaries
+        // This handles translated text that comes back as one block
+        if (!text.includes('\n') || text.split('\n').filter(l => l.trim()).length <= 1) {
+            // Split on sentence-ending punctuation: . ! ? and CJK period 。
+            const sentences = text.split(/(?<=[.!?。])\s+/).filter(s => s.trim());
+            if (sentences.length > 1) {
+                text = sentences.join('\n');
+            }
+        }
 
         const lines = text.split('\n').filter(line => line.trim());
         let html = '';
@@ -505,6 +737,9 @@ class ResultsPage {
     }
 
     // Audio Player Methods
+    /**
+     * Toggle audio play/pause state
+     */
     togglePlayPause() {
         if (!this.audioPlayer) return;
 
@@ -517,23 +752,37 @@ class ResultsPage {
         }
     }
 
+    /**
+     * Update progress bar and time display during playback
+     */
     updateProgress() {
         if (!this.audioPlayer || !this.elements.progressBar) return;
 
         const progress = (this.audioPlayer.currentTime / this.audioPlayer.duration) * 100;
         this.elements.progressBar.value = progress || 0;
 
+        if (this.elements.progressFill) {
+            this.elements.progressFill.style.width = `${progress || 0}%`;
+        }
+
         if (this.elements.currentTime) {
             this.elements.currentTime.textContent = this.formatTime(this.audioPlayer.currentTime);
         }
     }
 
+    /**
+     * Update total duration display when audio metadata loads
+     */
     updateDuration() {
         if (!this.audioPlayer || !this.elements.duration) return;
 
         this.elements.duration.textContent = this.formatTime(this.audioPlayer.duration);
     }
 
+    /**
+     * Seek to position in audio based on progress bar input
+     * @param {Event} e - Input event from progress bar
+     */
     seekAudio(e) {
         if (!this.audioPlayer) return;
 
@@ -541,12 +790,24 @@ class ResultsPage {
         this.audioPlayer.currentTime = time;
     }
 
+    /**
+     * Adjust audio volume
+     * @param {Event} e - Input event from volume bar
+     */
     changeVolume(e) {
         if (!this.audioPlayer) return;
 
-        this.audioPlayer.volume = e.target.value / 100;
+        const value = e.target.value;
+        this.audioPlayer.volume = value / 100;
+
+        if (this.elements.volumeFill) {
+            this.elements.volumeFill.style.width = `${value}%`;
+        }
     }
 
+    /**
+     * Cycle through available playback speeds
+     */
     cycleSpeed() {
         const speeds = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
         const currentIndex = speeds.indexOf(this.playbackSpeed);
@@ -557,19 +818,28 @@ class ResultsPage {
             this.audioPlayer.playbackRate = this.playbackSpeed;
         }
 
-        if (this.elements.speedControl) {
+        if (this.elements.speedDisplay) {
+            this.elements.speedDisplay.textContent = `${this.playbackSpeed}x`;
+        } else if (this.elements.speedControl) {
             this.elements.speedControl.querySelector('span').textContent = `${this.playbackSpeed}x`;
         }
 
         this.showToast(`Playback speed: ${this.playbackSpeed}x`, 'info');
     }
 
+    /**
+     * Skip forward or backward in audio
+     * @param {number} seconds - Seconds to skip (negative for backward)
+     */
     skip(seconds) {
         if (!this.audioPlayer) return;
 
         this.audioPlayer.currentTime += seconds;
     }
 
+    /**
+     * Toggle audio loop state
+     */
     toggleLoop() {
         this.isLooping = !this.isLooping;
 
@@ -584,12 +854,18 @@ class ResultsPage {
         this.showToast(this.isLooping ? 'Loop enabled' : 'Loop disabled', 'info');
     }
 
+    /**
+     * Handle audio playback completion
+     */
     handleAudioEnded() {
         if (!this.isLooping && this.elements.playPause) {
             this.elements.playPause.innerHTML = '<i class="fas fa-play"></i>';
         }
     }
 
+    /**
+     * Download the audio file
+     */
     downloadAudio() {
         if (!this.currentData) return;
 
@@ -604,6 +880,10 @@ class ResultsPage {
     }
 
     // Search Methods
+    /**
+     * Toggle search or translation panel visibility
+     * @param {string} panel - Panel type ('search' or 'translate')
+     */
     togglePanel(panel) {
         const panelElement = panel === 'search' ? this.elements.searchPanel : this.elements.translatePanel;
         if (panelElement) {
@@ -611,6 +891,10 @@ class ResultsPage {
         }
     }
 
+    /**
+     * Close search or translation panel
+     * @param {string} panel - Panel type ('search' or 'translate')
+     */
     closePanel(panel) {
         const panelElement = panel === 'search' ? this.elements.searchPanel : this.elements.translatePanel;
         if (panelElement) {
@@ -618,6 +902,10 @@ class ResultsPage {
         }
     }
 
+    /**
+     * Search transcript for text matches
+     * @param {string} query - Search query
+     */
     searchTranscript(query) {
         // Implementation for search functionality
         if (!query || !this.elements.transcript) {
@@ -646,6 +934,10 @@ class ResultsPage {
         }
     }
 
+    /**
+     * Highlight search matches in transcript
+     * @param {string} query - Search query to highlight
+     */
     highlightMatches(query) {
         const transcriptText = this.currentData.transcription || this.currentData.transcript || '';
         const regex = new RegExp(`(${query})`, 'gi');
@@ -656,6 +948,10 @@ class ResultsPage {
         }
     }
 
+    /**
+     * Navigate between search matches
+     * @param {number} direction - Direction (1 for next, -1 for previous)
+     */
     navigateSearch(direction) {
         if (this.searchMatches.length === 0) return;
 
@@ -674,6 +970,9 @@ class ResultsPage {
         }
     }
 
+    /**
+     * Clear search highlighting and reset search state
+     */
     clearSearch() {
         this.searchMatches = [];
         this.currentMatchIndex = -1;
@@ -691,6 +990,9 @@ class ResultsPage {
     }
 
     // Translation Methods
+    /**
+     * Translate transcript and summary to selected language
+     */
     async translateTranscript() {
         const targetLang = this.elements.targetLanguage?.value;
 
@@ -739,6 +1041,7 @@ class ResultsPage {
             const langName = this.getLanguageName(targetLang);
             this.lastTranslatedText = result.translated;
             this.lastTranslatedLang = langName;
+            this.lastTranslatedLangCode = targetLang;
 
             if (this.elements.translatedTranscriptCard) {
                 this.elements.translatedTranscriptCard.classList.remove('hidden');
@@ -808,6 +1111,9 @@ class ResultsPage {
         }
     }
 
+    /**
+     * Hide translation panels and clear translated content
+     */
     hideTranslation() {
         if (this.elements.translatedTranscriptCard) {
             this.elements.translatedTranscriptCard.classList.add('hidden');
@@ -821,29 +1127,112 @@ class ResultsPage {
         this.lastTranslatedLang = null;
     }
 
-    speakText() {
-        // Use translated text if available, otherwise original transcript
-        const text = this.lastTranslatedText || this.currentData?.transcription || this.currentData?.transcript || '';
-        if (!text) {
-            this.showToast('No text available to read aloud', 'error');
-            return;
-        }
+    /**
+     * Read card content aloud using Web Speech API
+     * @param {string} cardType - Type of card to read (transcript, summary, etc.)
+     */
+    speakCardText(cardType) {
+        // Map card types to their text sources and button elements
+        const cardConfig = {
+            transcript: {
+                getText: () => this.currentData?.transcription || this.currentData?.transcript || '',
+                btn: this.elements.speakTranscriptCard
+            },
+            summary: {
+                getText: () => this.currentData?.summary || '',
+                btn: this.elements.speakSummaryCard
+            },
+            translatedTranscript: {
+                getText: () => this.lastTranslatedText || '',
+                btn: this.elements.speakTranslatedTranscriptCard
+            },
+            translatedSummary: {
+                getText: () => this.lastTranslatedSummary || '',
+                btn: this.elements.speakTranslatedSummaryCard
+            }
+        };
 
-        if (window.speechSynthesis.speaking) {
+        const config = cardConfig[cardType];
+        if (!config) return;
+
+        // Clean markdown/bullet artifacts so they aren't spoken aloud
+        const rawText = config.getText();
+        const text = rawText
+            .replace(/\*\*(.+?)\*\*/g, '$1')   // bold **text**
+            .replace(/\*(.+?)\*/g, '$1')        // italic *text*
+            .replace(/^[\s]*[-•–—*]+\s+/gm, '') // bullet markers at line start
+            .replace(/^[\s]*\d+[.)]\s+/gm, '')  // numbered list: 1. or 1)
+            .replace(/^[\s]*[a-zA-Z][.)]\s+/gm, '') // lettered list: a. or a)
+            .replace(/#{1,6}\s+/g, '')           // markdown headings
+            .replace(/\s{2,}/g, ' ')             // collapse extra spaces
+            .trim();
+
+        // Helper to reset a button's icon and speaking state
+        const resetBtn = (btn) => {
+            if (btn) {
+                btn.classList.remove('speaking');
+                const icon = btn.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('fa-stop');
+                    icon.classList.add('fa-volume-up');
+                }
+            }
+        };
+
+        // If the same card is already speaking, stop it
+        if (this.currentSpeakingCard === cardType && window.speechSynthesis.speaking) {
             window.speechSynthesis.cancel();
+            resetBtn(config.btn);
+            this.currentSpeakingCard = null;
             this.showToast('Speech stopped', 'info');
             return;
         }
+
+        // If a different card is speaking, stop it first
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            const prevConfig = cardConfig[this.currentSpeakingCard];
+            if (prevConfig) resetBtn(prevConfig.btn);
+        }
+
+        if (!text) {
+            this.showToast('No text available to read aloud', 'error');
+            this.currentSpeakingCard = null;
+            return;
+        }
+
+        // Set active state on the button
+        if (config.btn) {
+            config.btn.classList.add('speaking');
+            const icon = config.btn.querySelector('i');
+            if (icon) {
+                icon.classList.remove('fa-volume-up');
+                icon.classList.add('fa-stop');
+            }
+        }
+        this.currentSpeakingCard = cardType;
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 1.0;
         utterance.pitch = 1.0;
 
+        // Set language for proper pronunciation
+        if (cardType === 'translatedTranscript' || cardType === 'translatedSummary') {
+            utterance.lang = this.lastTranslatedLangCode || 'en';
+        } else {
+            const detectedLang = this.currentData?.language || this.currentData?.source_language || 'en';
+            utterance.lang = detectedLang;
+        }
+
         utterance.onend = () => {
+            resetBtn(config.btn);
+            this.currentSpeakingCard = null;
             this.showToast('Finished reading', 'info');
         };
 
         utterance.onerror = () => {
+            resetBtn(config.btn);
+            this.currentSpeakingCard = null;
             this.showToast('Speech synthesis failed', 'error');
         };
 
@@ -852,6 +1241,10 @@ class ResultsPage {
     }
 
     // Copy/Export Methods
+    /**
+     * Copy content to clipboard
+     * @param {string} type - Content type to copy
+     */
     copyToClipboard(type) {
         let text = '';
         let label = type;
@@ -879,30 +1272,82 @@ class ResultsPage {
         }
     }
 
-    exportText(type) {
+    /**
+     * Toggle export format dropdown menu
+     * @param {string} menuId - ID of the dropdown menu element
+     */
+    toggleExportDropdown(menuId) {
+        const menu = document.getElementById(menuId);
+        if (!menu) return;
+
+        // Close all other export dropdowns first
+        document.querySelectorAll('.export-dropdown-menu').forEach(m => {
+            if (m.id !== menuId) m.classList.remove('show');
+        });
+
+        menu.classList.toggle('show');
+    }
+
+    /**
+     * Export content in specified format
+     * @param {string} type - Content type to export
+     * @param {string} format - Export format (txt, pdf, docx, etc.)
+     */
+    async exportInFormat(type, format) {
+        const fileId = this.currentData?.id;
+
+        // For transcript and summary, use the backend export API
+        if ((type === 'transcript' || type === 'summary') && fileId) {
+            try {
+                const response = await this.fetchWithAuth(`/api/files/${fileId}/export?format=${format}&content=${type}`);
+                if (!response || !response.ok) {
+                    throw new Error('Export failed');
+                }
+                const blob = await response.blob();
+                const baseName = (this.currentData?.filename || 'file').replace(/\.[^.]+$/, '');
+                const filename = `${baseName}_${type}.${format}`;
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                this.showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} exported as ${format.toUpperCase()}`, 'success');
+            } catch (error) {
+                console.error('Export error:', error);
+                this.showToast('Failed to export: ' + error.message, 'error');
+            }
+            return;
+        }
+
+        // For translated content or if no fileId, fall back to client-side TXT export
         let text = '';
-        let filename = '';
         let label = type;
 
         if (type === 'transcript') {
             text = this.currentData?.transcription || this.currentData?.transcript || '';
-            filename = `transcript_${Date.now()}.txt`;
         } else if (type === 'summary') {
             text = this.currentData?.summary || '';
-            filename = `summary_${Date.now()}.txt`;
         } else if (type === 'translatedTranscript') {
             text = this.lastTranslatedText || '';
-            const lang = this.lastTranslatedLang || 'translated';
-            filename = `transcript_${lang}_${Date.now()}.txt`;
             label = 'Translated transcript';
         } else if (type === 'translatedSummary') {
             text = this.lastTranslatedSummary || '';
-            const lang = this.lastTranslatedLang || 'translated';
-            filename = `summary_${lang}_${Date.now()}.txt`;
             label = 'Translated summary';
         }
 
-        if (text) {
+        if (!text) {
+            this.showToast('No text available to export', 'error');
+            return;
+        }
+
+        const baseName = (this.currentData?.filename || 'file').replace(/\.[^.]+$/, '');
+        const langSuffix = (type.startsWith('translated')) ? `_${this.lastTranslatedLang || 'translated'}` : '';
+        const filename = `${baseName}_${type}${langSuffix}.${format}`;
+
+        if (format === 'txt') {
             const blob = new Blob([text], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -910,14 +1355,35 @@ class ResultsPage {
             a.download = filename;
             a.click();
             URL.revokeObjectURL(url);
-
-            this.showToast(`${label.charAt(0).toUpperCase() + label.slice(1)} exported`, 'success');
+            this.showToast(`${label.charAt(0).toUpperCase() + label.slice(1)} exported as TXT`, 'success');
         } else {
-            this.showToast('No text available to export', 'error');
+            // For non-TXT formats on translated content, still export as TXT with a note
+            this.showToast(`${format.toUpperCase()} export for translated content is only available as TXT`, 'info');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename.replace(`.${format}`, '.txt');
+            a.click();
+            URL.revokeObjectURL(url);
         }
     }
 
+    /**
+     * Legacy export method - redirects to TXT export
+     * @param {string} type - Content type to export
+     */
+    exportText(type) {
+        // Legacy method - redirect to new format export with txt
+        this.exportInFormat(type, 'txt');
+    }
+
     // Utility Methods
+    /**
+     * Format file size bytes to human readable string
+     * @param {number} bytes - Size in bytes
+     * @returns {string} Formatted size (e.g., "1.5 MB")
+     */
     formatFileSize(bytes) {
         if (bytes === 0) return '0 B';
         const k = 1024;
@@ -926,11 +1392,21 @@ class ResultsPage {
         return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
     }
 
+    /**
+     * Format date string for display
+     * @param {string} dateString - ISO date string
+     * @returns {string} Formatted date/time
+     */
     formatDate(dateString) {
         const date = new Date(dateString);
         return date.toLocaleString();
     }
 
+    /**
+     * Format seconds to MM:SS format
+     * @param {number} seconds - Time in seconds
+     * @returns {string} Formatted time
+     */
     formatTime(seconds) {
         if (isNaN(seconds)) return '0:00';
 
@@ -939,6 +1415,11 @@ class ResultsPage {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
+    /**
+     * Convert language code to display name
+     * @param {string} code - Language code (e.g., 'en')
+     * @returns {string} Language display name
+     */
     getLanguageName(code) {
         const languages = {
             'en': 'English', 'hi': 'Hindi', 'es': 'Spanish', 'fr': 'French',
@@ -951,6 +1432,11 @@ class ResultsPage {
         return languages[code] || code.toUpperCase();
     }
 
+    /**
+     * Display toast notification
+     * @param {string} message - Message to display
+     * @param {string} type - Notification type (success, error, warning, info)
+     */
     showToast(message, type = 'info') {
         if (!this.elements.toastContainer) return;
 
